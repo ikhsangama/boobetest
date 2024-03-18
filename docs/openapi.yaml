@@ -1,0 +1,215 @@
+openapi: 3.0.0
+info:
+  title: Boo
+  description: Boo OpenAPI validation.
+  version: 1.0.0
+paths:
+  /profile/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          description: ID of profile
+          required: true
+          schema:
+            type: string
+            minLength: 24
+            maxLength: 24
+      responses:
+        '200':
+          description: Successful Response
+  /profile:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profile'
+      responses:
+        201:
+          description: Successful created profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+  /comment:
+    post:
+      description: Create comment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Comment'
+      responses:
+        201:
+          description: Successfully created a comment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentResponse'
+    get:
+      parameters:
+        - name: profileId
+          in: query
+          description: ID of the profile related to the comment
+          required: true
+          schema:
+            type: string
+        - name: voteType
+          in: query
+          description: Type of voting system (mbti, enneagram, zodiac)
+          required: false
+          schema:
+            type: string
+            enum: [ "mbti", "enneagram", "zodiac" ]
+        - name: voteValue
+          in: query
+          description: value of the respective voting type
+          required: false
+          schema:
+            type: string
+        - name: sortBy
+          in: query
+          description: The parameter used for sorting
+          required: false
+          schema:
+            type: string
+            enum: ["createdAt", "likes"]
+            default: "likes"
+        - name: direction
+          in: query
+          description: The direction of sorting
+          required: false
+          schema:
+            type: string
+            enum: [ "asc", "desc" ]
+            default: "desc"
+      responses:
+        '200':
+          description: Successfully fetched the comments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Comment"
+  /comment/like:
+    put:
+      description: Put like / unlike in comment by specified user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - commentId
+                - userId
+              properties:
+                commentId:
+                  type: string
+                userId:
+                  type: string
+      responses:
+        201:
+          description: Comment successfully liked
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Comment"
+components:
+  schemas:
+    ProfileResponse:
+      allOf:
+        - $ref: '#/components/schemas/Profile'
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: string
+              minLength: 24
+              maxLength: 24
+    Profile:
+      type: object
+      required:
+        - name
+        - mbti
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        mbti:
+          type: string
+          enum: [ 'ENFP', 'INFJ', 'INTJ', 'INTP', 'ENTP', 'ENTJ', 'ENFJ', 'ISFJ', 'ISTJ', 'ESTJ', 'ESFJ', 'ISTP', 'ISFP', 'ESTP', 'ESFP' ]
+          example: "INFJ"
+        enneagram:
+          type: string
+          pattern: "^([1-9]w[1-9])$"
+          example: "9w5"
+        variant:
+          type: string
+          example: "sp/so"
+        tritype:
+          type: string
+          example: "725"
+        socionics:
+          type: string
+          example: "SEE"
+        sloan:
+          type: string
+          example: "RCOEN"
+        psyche:
+          type: string
+          example: "FEVL"
+        image:
+          type: string
+          example: "https://yt3.googleusercontent.com/ytc/AGIKgqMgt-q_Gpurch1gH1NvnSqiZcipgshmZC4AoJ7M4Q=s900-c-k-c0x00ffffff-no-rj"
+    CommentResponse:
+      allOf:
+        - $ref: '#/components/schemas/Comment'
+        - type: object
+          properties:
+            id:
+              type: string
+    Comment:
+      type: object
+      required:
+        - text
+        - profileId
+        - userId
+      properties:
+        text:
+          type: string
+        userId:
+          type: string
+          description: 'People who do log in and comment'
+          minLength: 24
+          maxLength: 24
+        profileId:
+          type: string
+          description: 'Target comment'
+          minLength: 24
+          maxLength: 24
+        likes:
+          type: array
+        parent:
+          type: string
+        votes:
+          type: object
+          properties:
+            mbti:
+              type: string
+            enneagram:
+              type: string
+            zodiac:
+              type: string
+        createdAt:
+          type: string
+          format:
+            date-time

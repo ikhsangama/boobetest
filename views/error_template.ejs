@@ -1,0 +1,16 @@
+<%- include('partials/prologue.ejs', {title: "Profile Not Found | Boo Personality Database", description: "The profile you are looking for could not be found."}) %>
+
+<div class="row sqs-row">
+    <div class="col sqs-col-10 sqs-col-page">
+        <div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-2e6206ba777e9c6841a8">
+            <div class="sqs-block-content">
+                <h2 class="name">Error: <%= e.code %></h2>
+                <p><%= e.message %></p>
+                <h2 class="name"><%= e.Error %> <span style="color: #4edcd8; font-weight: bold">MBTI</span>
+                </h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/epilogue.ejs') %>
