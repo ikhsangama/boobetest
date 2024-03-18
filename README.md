@@ -20,7 +20,6 @@
 - The system must be able to create a new profile.
 - The system must be able to handle a profile ID that doesn't exist or is invalid.
 - The system must be able to handle potential errors during profile creation.
-- The system must be able to handle the case if a profile with the same data already exists.
 
 ## Comment Endpoint
 - The system must be able to create a new comment for a specific profile.
