@@ -41,6 +41,74 @@
 - The system will respond content in application/JSON format as the most common backend response, `GET /profile/:id` **endpoint is just an exception because** the template example already there.
 - The system test is integration test, it focused on interaction between different parts of system, it's aiming to expose the faults, defects, or bugs that can exist in the interfaces and interaction between integrated components/modules.
 
+# Sequence Diagram
+## GET /profile/:id
+```mermaid
+sequenceDiagram
+    participant Client as Client
+    participant Server as Server
+    participant Database as MongoDB
+    Client->>Server: GET /profile/{id}
+    Server->>Database: Fetch profile by ID
+    Database-->>Server: Return profile or error
+    Server-->>Client: Return profile data or error message
+```
+## POST /profile
+```mermaid
+sequenceDiagram
+    participant Client as Client
+    participant Server as Server
+    participant Database as MongoDB
+    Client->>Server: POST /profile (profile data)
+    Server->>Database: Create new profile
+    Database-->>Server: Return created profile or error
+    Server-->>Client: Return created profile data or error message
+```
+
+## GET /comment
+```mermaid
+sequenceDiagram
+    participant Client as Client
+    participant Server as Server
+    participant Database as MongoDB
+    Client->>Server: GET /comment (filters and sorting parameters)
+    Server->>Database: Fetch comments using parameters
+    Database-->>Server: Return comments data or error
+    Server-->>Client: Return comments or error message
+```
+## POST /comment
+```mermaid
+sequenceDiagram
+    participant Client as Client
+    participant Server as Server
+    participant ProfileRepo as ProfileRepository
+    participant CommentRepo as CommentRepository
+    Client->>Server: POST /comment (comment data)
+    Server-->>CommentRepo: Check if parent comment exists (if provided in request)
+    CommentRepo-->>Server: Return parent comment or not found
+    Server->>ProfileRepo: Check if profile and user exist
+    ProfileRepo-->>Server: Return profile and user or not found
+    Server->>CommentRepo: Create new comment
+    CommentRepo-->>Server: Return created comment or error
+    Server-->>Client: Return created comment data or error message
+```
+## PUT /comment/like
+```mermaid
+sequenceDiagram
+    participant Client as Client
+    participant Server as Server
+    participant ProfileRepo as ProfileRepository
+    participant CommentRepo as CommentRepository
+    Client->>Server: PUT /comment/like (commentId, userId)
+    Server->>ProfileRepo: Validate the userId
+    ProfileRepo-->>Server: Return user or not found
+    Server->>CommentRepo: Validate the commentId
+    CommentRepo-->>Server: Return comment or not found
+    Server->>CommentRepo: Update likes for the comment
+    CommentRepo-->>Server: Return updated comment or error
+    Server-->>Client: Return updated comment data or error message
+```
+
 # Running BackEnd locally
 ** Note : You can't run multiple environments at the same time on the same local machine.
 ## Prerequisites:
